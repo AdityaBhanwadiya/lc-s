@@ -1,49 +1,45 @@
 class Solution {
 public:
-
-    bool dfs(int node, int n, vector<int>& vis, vector<int>& path, vector<int>& status, vector<vector<int>>& graph) {
-        vis[node] = 1;
-        path[node] = 1;
-        
-        for(int neighbour : graph[node]) {
-            if(vis[neighbour] == 0) { 
-                if(dfs(neighbour, n, vis, path, status, graph)) {
-                    status[neighbour] = 0;
-                    return true;
-                }
-            } else if(path[neighbour] == 1) {  
-                // Cycle detected
-                status[neighbour] = 0;
-                return true;
-            }
-        }
-        
-        // Backtrack
-        status[node] = 1;
-        path[node] = 0;  
-        return false;
-    }
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
-        int n = graph.size();
+        // Using topological sort
+        vector<int> safeNodes;
 
-        vector<int> safe;
-        vector<int> nodeStatus(n, -1);
-        int flag = 0;
-        
-        vector<int> vis(n, 0);
-        vector<int> path(n, 0);
-        
-        for(int i = 0; i < n; i++) {
-            if(!vis[i]) {
-                dfs(i, n, vis, path, nodeStatus, graph);
+        int numCourses = graph.size();
+        // indegree 
+        vector<int> indegree (numCourses, 0);
+
+        vector<vector<int>> revGraph(numCourses);
+        for(int i=0;i<numCourses;i++) {
+            for(auto it : graph[i]){
+                revGraph[it].push_back(i);
+                indegree[i]++;
             }
         }
 
-        for (int i = 0; i < n; i++) {
-            if (nodeStatus[i] == 1) {
-                safe.push_back(i);
+        // queue
+        queue<int> q;
+
+        for (int i = 0; i < numCourses; i++){
+            if(indegree[i] == 0){
+                q.push(i);
             }
         }
-        return safe;
+
+
+        while(!q.empty()) {
+            int node = q.front();
+            q.pop();
+            safeNodes.push_back(node);
+
+            for(auto i : revGraph[node]) {
+                indegree[i]--;
+
+                if(indegree[i] == 0){
+                    q.push(i);
+                }
+            }
+        }
+        sort(safeNodes.begin(), safeNodes.end());
+        return safeNodes;
     }
 };
