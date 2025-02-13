@@ -1,12 +1,15 @@
+#include <unordered_set>
+#include <vector>
+
 class Solution {
 public:
-    bool containsDuplicate(vector<int>& nums) {
-        unordered_map<int, int> freq;
-        for(auto it:nums){
-            freq[it]++;
-        }
-        for(auto it: freq){
-            if(it.second > 1)   return true;
+    bool containsDuplicate(std::vector<int>& nums) {
+        unordered_set<int> seen;
+        for (int num : nums) {
+            if (seen.find(num) != seen.end()) {
+                return true; 
+            }
+            seen.insert(num);
         }
         return false;
     }
