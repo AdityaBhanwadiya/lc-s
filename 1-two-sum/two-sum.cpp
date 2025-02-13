@@ -1,18 +1,15 @@
 class Solution {
 public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        int n = nums.size();
-        vector<int> ans;
+    std::vector<int> twoSum(std::vector<int>& nums, int target) {
+        std::unordered_map<int, int> numIndex; 
 
-        for(int i = 0;i<n;i++) {
-            for(int j=i+1;j<n;j++) {
-                if(nums[i] + nums[j] == target){
-                    ans.push_back(i);
-                    ans.push_back(j);
-                    break;
-                }
+        for (int i = 0; i < nums.size(); i++) {
+            int complement = target - nums[i]; 
+            if (numIndex.find(complement) != numIndex.end()) {
+                return {numIndex[complement], i}; 
             }
+            numIndex[nums[i]] = i; 
         }
-        return ans;
+        return {};
     }
 };
