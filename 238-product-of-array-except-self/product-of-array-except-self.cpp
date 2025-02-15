@@ -5,24 +5,18 @@ public:
     // ans [24, 12, 8, 6]
     vector<int> productExceptSelf(vector<int>& nums) {
         int n = nums.size();
-        vector<int> next (n);
-        vector<int> prev (n);
+        vector<int> result (n);
 
         int nextPro = 1;
         for(int i=n-1;i>=0;i--){
-            next[i] = nextPro; 
+            result[i] = nextPro;  // 24, 12, 4, 1
             nextPro *= nums[i];
         }
 
         int prevPro =  1;
         for(int i=0;i<n;i++) {
-            prev[i] = prevPro; // 1 1 2 6 
+            result[i] *= prevPro; // 24, 12, 8, 6
             prevPro *= nums[i];
-        }
-
-        vector<int> result;
-        for(int i=0;i<n;i++) {
-            result.push_back(next[i] * prev[i]);
         }
 
         return result;
