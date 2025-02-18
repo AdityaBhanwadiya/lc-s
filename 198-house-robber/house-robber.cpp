@@ -19,17 +19,22 @@ public:
         int n = nums.size();
         if(n == 1)  return nums[0];
 
-        vector<int> dp(n+1, 0);
+        // vector<int> dp(n+1, 0);
 
-        dp[0] = nums[0];
+        // dp[0] = nums[0];
+        // int neg = 0;
+
+        int prev1 = nums[0], prev2 = 0;
 
         for(int i=1;i<n;i++) {
-            int pick = nums[i]; if(i > 1) pick += dp[i-2];
-            int notPick = 0 + dp[i-1];
+            int pick = nums[i]; if(i > 1) pick += prev2;
+            int notPick = 0 + prev1;
 
-            dp[i] = max(pick, notPick);
+            int curr = max(pick, notPick);
 
+            prev2 = prev1;
+            prev1 = curr;
         }
-        return dp[n-1];
+        return prev1;
     }
 };
