@@ -45,18 +45,35 @@ public:
         // }
         // return ahead[-1+1];
 
-        vector<int> dp (n, 1);
-        int ans = 0;
+        // algorithmic approach
+    //     vector<int> dp (n, 1);
+    //     int ans = 0;
 
-        for(int ind=0;ind<n;ind++) {
-            for(int prev = 0;prev < ind;prev++) {
-                if(nums[prev] < nums[ind]) {
-                    dp[ind] = max(1+dp[prev], dp[ind]);
-                }
-            }
-            ans = max(ans, dp[ind]);
-        }
+    //     for(int ind=0;ind<n;ind++) {
+    //         for(int prev = 0;prev < ind ;prev++) {
+    //             if(nums[prev] < nums[ind]) {
+    //                 dp[ind] = max(1+dp[prev], dp[ind]);
+    //             }
+    //         }
+    //         ans = max(ans, dp[ind]);
+    //     }
         
-    return ans;
+    // return ans;
+
+
+    // Binary Search
+
+    vector<int> temp;
+    temp.push_back(nums[0]);
+
+    for(int i=1;i<n;i++){
+        if(nums[i] > temp.back()){
+            temp.push_back(nums[i]);
+        }else{
+            int ind = lower_bound(temp.begin(), temp.end(), nums[i]) - temp.begin();
+            temp[ind] = nums[i];
+        }
+        }
+        return temp.size();
     }
 };
