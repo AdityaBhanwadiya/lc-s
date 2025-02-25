@@ -24,35 +24,38 @@ public:
     int maxProfit(vector<int>& prices) {
         int n = prices.size();
 
-        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(3, vector<int>(4, 0)));
+        // vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(3, vector<int>(4, 0)));
+        vector<vector<int>> ahead (3, vector<int>(4, 0));
+        vector<vector<int>> curr (3, vector<int>(4, 0));
 
-        for(int i=0;i<=1;i++) {
-            for(int j = 0;j<=2;j++){
-                dp[n][i][j] = 0;
-            }
-        }
+        // for(int i=0;i<=1;i++) {
+        //     for(int j = 0;j<=2;j++){
+        //         dp[n][i][j] = 0;
+        //     }
+        // }
 
-        for(int i=0;i<=n;i++) {
-            for(int j = 0;j<=1;j++){
-                dp[i][j][0] = 0;
-            }
-        }
+        // for(int i=0;i<=n;i++) {
+        //     for(int j = 0;j<=1;j++){
+        //         dp[i][j][0] = 0;
+        //     }
+        // }
         int profit = 0;
         for(int i = n-1;i>=0;i--){
             for(int j = 0;j<=1;j++){
                 for(int k=1;k<=2;k++){
                     if(j){
-                        profit = max(-prices[i] + dp[i+1][0][k], 0 + dp[i + 1][1][k]);
+                        profit = max(-prices[i] + ahead[0][k], 0 + ahead[1][k]);
                     } else{
-                        profit = max(prices[i] + dp[i+1][1][k-1], 0 + dp[i + 1][0][k]);
+                        profit = max(prices[i] + ahead[1][k-1], 0 + ahead[0][k]);
                     }
-                    dp[i][j][k] = profit;
+                    curr[j][k] = profit;
                 }
             }
+            ahead = curr;
         }
 
 
-        return dp[0][1][2];
+        return ahead[1][2];
 
     }
 };
