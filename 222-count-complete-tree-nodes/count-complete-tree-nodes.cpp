@@ -11,18 +11,35 @@
  */
 class Solution {
 private:
-    void func (TreeNode* root, int& count) {
-        if(!root)   return;
-        if(root)    count++;
+    int getHeight (TreeNode* root, string dir) {
+        if(!root)   return 0;
+        int lh = 0, rh = 0;
 
-        if(root->left)  func(root->left, count);
-        if(root->right) func(root->right, count);
+        if(dir == "left") {
+            while(root){
+                lh++;
+                root = root->left;
+            }
+            return lh;
+        }
+        else {
+            while(root){
+                rh++;
+                root = root->right;
+            }
+            return rh;
+        }
+        return 0;
+
     }
 public:
     int countNodes(TreeNode* root) {
         if(!root)   return 0;
-        int count = 0;
-        func (root, count);
-        return count;
+    
+        int lh = getHeight (root, "left");
+        int rh = getHeight (root, "right");
+
+        if(lh == rh)    return pow(2, lh) - 1;
+        return 1 + (countNodes(root->left) + countNodes(root->right));
     }
 };
