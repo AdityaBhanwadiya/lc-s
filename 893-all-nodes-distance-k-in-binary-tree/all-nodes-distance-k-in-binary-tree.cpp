@@ -8,64 +8,69 @@
  * };
  */
 class Solution {
-public:
-    void parentChildren (TreeNode* root, unordered_map<TreeNode*, TreeNode*>& parentMap) {
-        if(!root)   return;
-
-        if(root->left) {
-            parentMap[root->left] = root;
-        }
-        if(root->right) {
-            parentMap[root->right] = root;
-        }
-
-        parentChildren (root->left, parentMap);
-        parentChildren (root->right, parentMap);
-    }
-    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
-        if(k == 0)  return {target->val};
-        
-        int distance = 0;
+private:
+    void fillParentMap(TreeNode* root, unordered_map<TreeNode*, TreeNode*>& parentMap) {
         queue<TreeNode*> q;
-        unordered_map<TreeNode*, TreeNode*> parentMap;
-        unordered_map<TreeNode*, bool> visited;
+        q.push(root);
+        
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            
+            if (node->left) {
+                q.push(node->left);
+                parentMap[node->left] = node;
+            }
+            if (node->right) {
+                q.push(node->right);
+                parentMap[node->right] = node;
+            }
+        }
+    }
+    void radialTraversal(TreeNode* target, unordered_map<TreeNode*, TreeNode*>& parentMap, int k, 
+                         queue<pair<TreeNode*, int>>& qt, unordered_map<TreeNode*, bool>& visited) {
+        while (!qt.empty()) {
+            int size = qt.size();
+            if (qt.front().second == k) break; // Stop if we've reached distance k
 
-        parentChildren (root, parentMap);
+            for (int i = 0; i < size; i++) {
+                auto [node, dist] = qt.front();
+                qt.pop();
 
-        q.push(target);
-        visited[target] = true;
-
-        while(distance != k) {
-            int size = q.size();
-
-            for(int i=0;i<size;i++){
-                TreeNode* node = q.front();
-                q.pop();
-
-                if(node->left && !visited[node->left]) { 
-                    q.push(node->left);
+                if (node->left && !visited[node->left]) {
+                    qt.push({node->left, dist + 1});
                     visited[node->left] = true;
                 }
-
-                if(node->right && !visited[node->right]) { 
-                    q.push(node->right);
+                if (node->right && !visited[node->right]) {
+                    qt.push({node->right, dist + 1});
                     visited[node->right] = true;
                 }
-
-                if(parentMap.find(node) != parentMap.end() && !visited[parentMap[node]]){
-                    q.push(parentMap[node]);
+                if (parentMap.find(node) != parentMap.end() && !visited[parentMap[node]]) {
+                    qt.push({parentMap[node], dist + 1});
                     visited[parentMap[node]] = true;
                 }
             }
-            distance++;
         }
-        
-        vector<int> ans;
-        while(!q.empty()){
-            ans.push_back(q.front()->val);
-            q.pop();
-        }
+    }
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        unordered_map<TreeNode* , TreeNode*> parentMap;
+        fillParentMap(root, parentMap);
 
-        return ans;
+        queue<pair<TreeNode*, int>> qt;
+        unordered_map<TreeNode*, bool> visited;
+        qt.push({target, 0});
+        visited[target] = true;
+
+        radialTraversal(target, parentMap, k, qt, visited);
+
+        vector<int> result;
+        while (!qt.empty()) {
+            auto [node, dist] = qt.front();
+            qt.pop();
+            if (dist == k) result.push_back(node->val);
+        }
+        return result;
+
     }
 };
