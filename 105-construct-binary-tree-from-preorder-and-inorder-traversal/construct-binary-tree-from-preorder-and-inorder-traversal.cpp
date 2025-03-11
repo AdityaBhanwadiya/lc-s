@@ -10,26 +10,37 @@
  * };
  */
 class Solution {
+private:
+    TreeNode* buildTree(vector<int>& preorder, int preStart, int preEnd, 
+            vector<int>& inorder, int inStart, int inEnd, map<int, int>& inMap){
+                if(preStart > preEnd || inStart > inEnd){
+                    return NULL;
+                }
+                
+                TreeNode* root = new TreeNode(preorder[preStart]);
+                
+                int inRoot = inMap[root->val];
+                
+                int numsLeft = inRoot - inStart;
+                
+                root->left = buildTree(preorder, preStart + 1, preStart + numsLeft, 
+                                inorder, inStart, inRoot - 1, inMap);
+                
+                root->right = buildTree(preorder, preStart + numsLeft + 1, preEnd, 
+                                inorder, inRoot + 1, inEnd, inMap);
+                
+                return root;
+            }
 public:
-    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        if (preorder.empty() || inorder.empty()) {
-            return nullptr;
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder){
+        map<int, int> inMap;
+        
+        for(int i = 0; i < inorder.size(); i++){
+            inMap[inorder[i]] = i;
         }
-
-        TreeNode* root = new TreeNode(preorder[0]);
-    
-        auto index = find(inorder.begin(), inorder.end(), preorder[0]) - inorder.begin();
-
-        vector<int> leftInorder (inorder.begin(), inorder.begin() + index);
-        vector<int> rightInorder (inorder.begin() + index + 1, inorder.end());
-        vector<int> leftPreOrder (preorder.begin()+1, preorder.begin() + index + 1);
-        vector<int> rightPreOrder (preorder.begin()+index+1, preorder.end());
-
-        root->left = buildTree(leftPreOrder, leftInorder);
-        root->right = buildTree(rightPreOrder, rightInorder);
-
+        
+        TreeNode* root = buildTree(preorder, 0, preorder.size()-1, inorder, 0, inorder.size()-1, inMap);
+        
         return root;
-
-
-    }
+    } 
 };
