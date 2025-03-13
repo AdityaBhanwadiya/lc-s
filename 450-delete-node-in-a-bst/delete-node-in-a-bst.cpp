@@ -10,60 +10,58 @@
  * };
  */
 class Solution {
-public:
-    TreeNode* helper (TreeNode* root){
-        // no left subtree
+private:
+    TreeNode* lastRight(TreeNode* node) {
+        if(!node->right)   return node;
+        return lastRight(node->right);
+    }
+
+    TreeNode* helper(TreeNode* root) {
         if(root->left == NULL)
             return root->right;
-        
-        // No right subtree
-        if(root->right == NULL) 
+        else if(root->right == NULL)
             return root->left;
-        
-        // both trees present, connect left's rightmost to right's first.
-        TreeNode* rightChild = root->right;
-        TreeNode* lastRight = findLastRight(root->left);
-        lastRight->right = rightChild;
 
+        TreeNode* rightChild = root->right;
+        TreeNode* lastRightChild = lastRight(root->left);
+
+        lastRightChild->right = rightChild;
         return root->left;
     }
-
-    TreeNode* findLastRight(TreeNode* root) {
-        if(root->right == NULL) 
-            return root;
-        return findLastRight(root->right);
-    }
+public:
     TreeNode* deleteNode(TreeNode* root, int key) {
-        if(root == NULL)
-            return NULL;
-        
+        if(!root)   return NULL;
+
         if(root->val == key)
             return helper(root);
-    
+
         TreeNode* dummy = root;
 
-        while(root != NULL){
+        while(root){
             if(root->val > key){
-                //go left
-                if(root->left != NULL && root->left->val == key){
-                    // found key
+                if(root->left && root->left->val == key){
                     root->left = helper(root->left);
                     break;
                 }else{
                     root = root->left;
-                }
-            }
-            else{
-                //go right
-                if(root->right != NULL && root->right->val == key){
-                    // found key
+                }    
+            }else{
+                if(root->right && root->right->val == key){
                     root->right = helper(root->right);
                     break;
                 }else{
                     root = root->right;
-                }
+                }    
             }
         }
+
         return dummy;
     }
 };
+
+
+
+// need dummy node
+// Search for the element (make sure left/right exist and if left val/ right val equals to key)
+// While rewiring, make sure if the key node's left/right exist/not exist
+
