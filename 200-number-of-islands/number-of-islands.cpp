@@ -1,47 +1,46 @@
 class Solution {
 public:
     int numIslands(vector<vector<char>>& grid) {
-        // Declare visited vector of same size as grid with all 0's
-        vector<vector<int>> visited(grid.size(), vector<int>(grid[0].size(), 0));
+        int n = grid.size();
+        int m = grid[0].size();
 
-        // Declare queue for BFS
+        vector<int> dx = {-1, 1, 0, 0};
+        vector<int> dy = {0, 0, -1, 1};
+
         queue<pair<int, int>> q;
 
-        // Island counter
-        int count = 0;
+        vector<vector<int>> visited(n, vector<int>(m, 0));
 
-        // Directions for BFS (Up, Down, Left, Right)
-        vector<int> dirsX = {-1, 1, 0, 0};
-        vector<int> dirsY = {0, 0, -1, 1};
+        int islands = 0;
 
-        for (int i = 0; i < grid.size(); i++) {
-            for (int j = 0; j < grid[0].size(); j++) {
-                // If land is found and not visited, start BFS
-                if (grid[i][j] == '1' && visited[i][j] == 0) {
-                    count++;
-                    visited[i][j] = 1;  // Mark as visited
+
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(grid[i][j] == '1' && visited[i][j] == 0){
+                    islands++;
                     q.push({i, j});
+                    visited[i][j] = 1;
 
-                    // BFS traversal
-                    while (!q.empty()) {
-                        auto it = q.front();
+                    while(!q.empty()){
+                        auto item = q.front();
                         q.pop();
+                        int x = item.first;
+                        int y = item.second;
 
-                        for (int k = 0; k < 4; k++) {
-                            int newX = it.first + dirsX[k];
-                            int newY = it.second + dirsY[k];
+                        for(int i=0;i<4;i++){
+                            int nx = x + dx[i];
+                            int ny = y + dy[i];
 
-                            // Check if within bounds and unvisited land
-                            if (newX >= 0 && newX < grid.size() && newY >= 0 && newY < grid[0].size()
-                                && grid[newX][newY] == '1' && visited[newX][newY] == 0) {
-                                visited[newX][newY] = 1;
-                                q.push({newX, newY});
+                            if(nx >= 0 && ny >= 0 && nx < n && ny < m && visited[nx][ny] == 0 && grid[nx][ny] == '1'){
+                                visited[nx][ny] = 1;
+                                q.push({nx, ny});
                             }
                         }
                     }
                 }
             }
         }
-        return count;
+        
+    return islands;
     }
 };
