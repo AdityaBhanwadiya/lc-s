@@ -1,26 +1,11 @@
 class Solution {
-public:
-    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
-        // Using topological sort
-        vector<int> safeNodes;
-
-        int numCourses = graph.size();
-        // indegree 
-        vector<int> indegree (numCourses, 0);
-
-        vector<vector<int>> revGraph(numCourses);
-        for(int i=0;i<numCourses;i++) {
-            for(auto it : graph[i]){
-                revGraph[it].push_back(i);
-                indegree[i]++;
-            }
-        }
-
-        // queue
+private:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& adjList, vector<int>& indegree) {
+        vector<int> topo;
         queue<int> q;
 
-        for (int i = 0; i < numCourses; i++){
-            if(indegree[i] == 0){
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
                 q.push(i);
             }
         }
@@ -29,17 +14,32 @@ public:
         while(!q.empty()) {
             int node = q.front();
             q.pop();
-            safeNodes.push_back(node);
+            topo.push_back(node);
 
-            for(auto i : revGraph[node]) {
-                indegree[i]--;
-
-                if(indegree[i] == 0){
-                    q.push(i);
+            for(auto it : adjList[node]){
+                indegree[it]--;
+                if(indegree[it] == 0){
+                    q.push(it);
                 }
             }
         }
-        sort(safeNodes.begin(), safeNodes.end());
-        return safeNodes;
+        sort(topo.begin(), topo.end());
+        return topo;
+    }
+public:
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        int n = graph.size();
+        
+        vector<vector<int>> reversedgraph(n);
+        vector<int> indegree(n, 0);
+
+        for(int i=0;i<n;i++){
+            for(auto it: graph[i]) {
+                reversedgraph[it].push_back(i);
+                indegree[i]++;
+            }
+        }
+
+        return findOrder (n, reversedgraph, indegree);
     }
 };
