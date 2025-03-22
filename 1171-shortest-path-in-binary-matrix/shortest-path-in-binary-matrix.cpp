@@ -1,44 +1,41 @@
 class Solution {
 public:
     int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+
         int n = grid.size();
+        if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1)
+            return -1; 
 
-        if(grid[0][0] == 1 || grid[n-1][n-1] == 1)  return -1;
+        vector<vector<int>> dist(n, vector<int>(n, 1e9));
+        queue<pair<int, pair<int, int>>> q;
 
-        // initial config
-        vector<vector<int>> dist (n, vector<int> (n, 1e9));
+        vector<int> dx = {-1, 1, 0, 0, 1, 1, -1, -1};
+        vector<int> dy = {0, 0, -1, 1, 1, -1, 1, -1};
 
+        q.push({1, {0, 0}});
         dist[0][0] = 1;
 
-        queue<pair<int, pair<int, int>>> q;
-        q.push({1, {0,0}});
-
-        vector<int> distx = {-1, 1, 0, 0, 1, -1, 1, -1};
-        vector<int> disty = {0, 0, -1, 1, 1, -1, -1, 1};
-
-        int length = 0;
-
-        while(!q.empty()) {
-            auto cell = q.front();
-            int distance = cell.first;
-            int row = cell.second.first;
-            int col = cell.second.second;
+        while (!q.empty()) {
+            auto [d, cell] = q.front();
+            auto [r, c] = cell;
             q.pop();
 
-            if(row == n-1 && col == n-1)    return distance;
+            if (r == n - 1 && c == n - 1)
+                return d;
 
-            for(int i = 0;i<8;i++){
-                int nx = row + distx[i];
-                int ny = col + disty[i];
+            for (int k = 0; k < 8; k++) {
+                int newR = r + dx[k];
+                int newC = c + dy[k];
 
-                if(nx>=0 && nx<dist.size() && ny>=0 && ny < dist.size() && grid[nx][ny] == 0) {
-                    if(distance + 1 < dist[nx][ny]){
-                        dist[nx][ny] = distance + 1;
-                        q.push({distance + 1, {nx, ny}});
+                if (newR >= 0 && newC >= 0 && newR < n && newC < n && grid[newR][newC] == 0) {
+                    if (dist[newR][newC] > d + 1) {
+                        dist[newR][newC] = d + 1;
+                        q.push({d + 1, {newR, newC}});
                     }
                 }
             }
         }
+
         return -1;
     }
 };
