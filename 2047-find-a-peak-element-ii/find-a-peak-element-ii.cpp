@@ -1,49 +1,35 @@
 class Solution {
-private:
-    bool isPeak(int x, int y, vector<vector<int>>& mat) {
-        int m = mat.size(), n = mat[0].size();
-        for (int dir = 0; dir < 4; dir++) {
-            int nx = x + dx[dir];
-            int ny = y + dy[dir];
-            if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
-                if (mat[nx][ny] > mat[x][y]) return false;
-            }
-        }
-        return true;
-    }
 public:
-    vector<int> dx = {-1, 1, 0, 0};
-    vector<int> dy = {0, 0, -1, 1};
-
-
     vector<int> findPeakGrid(vector<vector<int>>& mat) {
-        int m = mat.size(), n = mat[0].size();
-        vector<vector<bool>> visited(m, vector<bool>(n, false));
-        
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (!visited[i][j]) {
-                    queue<pair<int, int>> q;
-                    q.push({i, j});
-                    visited[i][j] = true;
-                    
-                    while (!q.empty()) {
-                        auto [x, y] = q.front(); q.pop();
-                        
-                        if (isPeak(x, y, mat)) {
-                            return {x, y}; 
-                        }
+        int rows = mat.size();
+        int cols = mat[0].size();
 
-                        for (int d = 0; d < 4; d++) {
-                            int nx = x + dx[d];
-                            int ny = y + dy[d];
-                            if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny]) {
-                                visited[nx][ny] = true;
-                                q.push({nx, ny});
-                            }
-                        }
+        for(int i=0;i<rows;i++) {
+            int left = i, right = mat[i].size();
+
+            while(left<= right) {
+                int mid = left + (right - left) / 2;
+
+                // Find max element's row in this column
+                int maxRow = 0;
+                for(int i = 1; i < rows; i++) {
+                    if(mat[i][mid] > mat[maxRow][mid]) {
+                        maxRow = i;
                     }
                 }
+
+                int maxValueInRow = mat[maxRow][mid];
+                int leftVal  = (mid - 1 >= 0)     ? mat[maxRow][mid - 1] : -1;
+                int rightVal = (mid + 1 < cols)   ? mat[maxRow][mid + 1] : -1;
+
+                if(maxValueInRow > leftVal && maxValueInRow > rightVal) {
+                    return {maxRow, mid};
+                } else if(rightVal > maxValueInRow) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+
             }
         }
         return {-1, -1};
