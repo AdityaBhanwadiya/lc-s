@@ -1,47 +1,45 @@
 class Solution {
 private:
-    // prev smaller element
-    vector<int> prevSmallerElement(vector<int>& nums2) {
+    vector<int> findNSE(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> result(n);
         stack<int> st;
-        int m = nums2.size();
-        vector<int> ans(m);
 
-        for(int i = 0; i < m; i++) {
-            while (!st.empty() && nums2[st.top()] >= nums2[i]) {
+        // 3 1 2 4
+        // st = 1 ,4 ,4 ,4
+        for(int i = n-1;i>=0;i--){
+            while(!st.empty() && arr[st.top()] >= arr[i]) {
                 st.pop();
             }
-            ans[i] = st.empty() ? -1 : st.top();
-            st.push(i);  
-        }   
-        return ans;
+            result[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+        return result;
     }
-
-    // next smaller element
-    vector<int> nextSmallerElement(vector<int>& nums2) {
+    vector<int> findPSE(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> result(n);
         stack<int> st;
-        int m = nums2.size();
-        int i = m - 1;
-        vector<int> ans(m);
 
-        while (i >= 0) {
-            while (!st.empty() && nums2[st.top()] >= nums2[i]) {
+        // 3 1 2 4
+        for(int i = 0;i<n;i++){
+            while(!st.empty() && arr[st.top()] > arr[i]) {
                 st.pop();
             }
-            ans[i] = st.empty() ? m : st.top(); 
-            st.push(i); 
-            i--;
-        }   
-        return ans;
+            result[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+        return result;
     }
 
 public:
     int largestRectangleArea(vector<int>& heights) {
-        vector<int> nse = nextSmallerElement(heights);
-        vector<int> pse = prevSmallerElement(heights);
-
+        vector<int> nse = findNSE(heights);
+        vector<int> pse = findPSE(heights);
         int maxi = 0;
-        for(int i = 0; i < heights.size(); i++) {
-            maxi = max(maxi, heights[i] * (nse[i] - pse[i] - 1));
+
+        for(int i=0;i<heights.size();i++) {
+            maxi = max (maxi, (heights[i] * (nse[i] - pse[i] - 1)));
         }
         return maxi;
     }
