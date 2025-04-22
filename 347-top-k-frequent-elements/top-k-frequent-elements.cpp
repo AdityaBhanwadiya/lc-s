@@ -5,17 +5,17 @@ public:
         for(auto it: nums)
             freq[it]++;
         
-        // freq num
-        priority_queue<pair<int, int>, vector<pair<int, int>>> maxHeap;
-
-        for(auto it : freq){
-            maxHeap.push({it.second, it.first});
+        vector<vector<int>> buckets(nums.size() + 1);
+        for (auto& [num, f] : freq) {
+            buckets[f].push_back(num);
         }
 
         vector<int> result;
-        while(!maxHeap.empty() && k--){
-            result.push_back(maxHeap.top().second);
-            maxHeap.pop();
+        for (int i = buckets.size() - 1; i >= 0 && result.size() < k; --i) {
+            for (int num : buckets[i]) {
+                result.push_back(num);
+                if (result.size() == k) break;
+            }
         }
 
         return result;
