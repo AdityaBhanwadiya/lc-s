@@ -1,74 +1,47 @@
-class DisjointSet {
-  vector<int> rank, parent, size;
-  
- public:
-    DisjointSet(int n) {
-        rank.resize(n+1, 0);
-        parent.resize(n+1);
-        
-        for(int i=0;i<=n;i++){
-            parent[i]=i;
-        }
-        
-        size.resize(n+1, 1);
-    }
-    
-    int findParent (int node) {
-        if(node == parent[node])
-            return node;
-        return parent[node] = findParent(parent[node]);
-    }
-    
-    void unionByRank (int u, int v){
-        int ulu = findParent(u);
-        int ulv = findParent(v);
-        
-        if(ulu == ulv)  return;
-        if(rank[ulu] > rank[ulv]){
-            parent[ulv] = ulu;
-        }
-        else if(rank[ulv] > rank[ulu]){
-            parent[ulu] = ulv;
-        }else{
-            parent[ulu] = ulv;
-            rank[ulv]++;
-        }
-    }
-    
-    
-    void unionBySize (int u, int v){
-        int ulu = findParent(u);
-        int ulv = findParent(v);
-        
-        if(ulu == ulv)  return;
-        if(size[ulu] > rank[ulv]){
-            parent[ulv] = ulu;
-            size[ulu] += size[ulv];
-        }
-        else if(rank[ulv] > rank[ulu]){
-            parent[ulu] = ulv;
-            size[ulv] += size[ulu];
-        }
-    }
-};
-
 class Solution {
+    int comp = 0;
+private:
+    void dfs(int start, vector<vector<int>>& adjacencyList, vector<int>& visited) {
+        visited[start] = 1;
+
+        for(auto it : adjacencyList[start]) {
+            if(!visited[it]) {
+                dfs(it, adjacencyList, visited);
+            }
+        }
+    }
+
+    vector<vector<int>> createAdjList (vector<vector<int>>& isConnected) {
+        int n = isConnected.size();
+        int m = isConnected[0].size();
+
+        vector<vector<int>> adjacencyList (n);
+
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(isConnected[i][j] == 1 && i!=j){
+                    adjacencyList[i].push_back(j);
+                    adjacencyList[j].push_back(i);
+                }
+            }
+        }
+        return adjacencyList;
+    }
 public:
     int findCircleNum(vector<vector<int>>& isConnected) {
         int n = isConnected.size();
-        DisjointSet ds(n);
+        vector<int> visited (n, 0);
+
+        vector<vector<int>> adjacencyList = createAdjList(isConnected);
 
         for(int i=0;i<n;i++) {
-            for(int j=0;j<n;j++) {
-                if (isConnected[i][j] == 1)
-                    ds.unionBySize(i, j);
+            if(!visited[i]){
+                comp++;
+                dfs(i, adjacencyList, visited);
             }
         }
 
-        int count = 0;
-        for(int i=0;i<n;i++){
-            if(ds.findParent(i) == i)   count++;
-        }
-        return count;
+        return comp;
+
     }
 };
