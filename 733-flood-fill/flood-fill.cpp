@@ -1,29 +1,36 @@
 class Solution {
-private:
-    void dfs(vector<vector<int>>& copyImage, int sr, int sc, int color, int startColor, vector<int> dx, vector<int> dy) {
-        copyImage[sr][sc] = color;
-    
-        int n = copyImage.size();
-        int m = copyImage[0].size();
-
-        for(int i=0;i<4;i++) {
-            int nx = sr + dx[i];
-            int ny = sc + dy[i];
-
-            if(nx >= 0 && ny>= 0 && nx<n && ny < m && copyImage[nx][ny] == startColor && copyImage[nx][ny] != color){
-                dfs(copyImage, nx, ny, color, startColor, dx, dy);
-            }
-        }
-    }
 public:
     vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
-        int startColor = image[sr][sc];
-        vector<vector<int>> copyImage = image;
+        int n = image.size();
+        int m = image[0].size();
 
-        vector<int> dx = {-1, 1, 0, 0};
-        vector<int> dy = {0, 0, -1, 1};
+        queue<pair<int, int>> q;
+        q.push({sr, sc});
+        int iColor = image[sr][sc];
 
-        dfs(copyImage, sr, sc, color, startColor, dx, dy);
-        return copyImage;
+        if(iColor == color) return image;
+        
+        image[sr][sc] = color;
+
+
+        vector<int> dirX = {-1, 1, 0, 0};
+        vector<int> dirY = {0, 0, -1, 1};
+
+        while(!q.empty()) {
+            auto item = q.front();
+            q.pop();
+
+            for(int k=0;k<4;k++){
+                int nx = item.first + dirX[k];
+                int ny = item.second + dirY[k];
+
+                if(nx>=0 && nx<n && ny>=0 && ny<m && image[nx][ny] == iColor){
+                    image[nx][ny] = color;
+                    q.push({nx, ny});
+                }
+            }
+
+        }
+        return image;
     }
 };
