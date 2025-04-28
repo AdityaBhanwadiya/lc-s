@@ -4,39 +4,42 @@ public:
         int n = mat.size();
         int m = mat[0].size();
 
-        vector<vector<int>> distanceMatrix(n, vector<int>(m, -1));
+        vector<vector<int>> result (n, vector<int>(m, 0));
+        vector<vector<int>> visited(n, vector<int>(m, 0));
+
         queue<pair<pair<int, int>, int>> q;
 
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < m; j++) {
-                if(mat[i][j] == 0) {
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(mat[i][j] == 0){
+                    visited[i][j] = 1;
                     q.push({{i, j}, 0});
-                    distanceMatrix[i][j] = 0;
                 }
             }
         }
 
-        vector<int> dx = {-1, 1, 0, 0};
-        vector<int> dy = {0, 0, -1, 1};
+        vector<int> dirx = {-1, 1, 0, 0};
+        vector<int> diry = {0, 0, -1, 1};
 
-        while(!q.empty()){
-            auto item = q.front();
-            q.pop();
-            int x = item.first.first;
-            int y = item.first.second;
-            int dist = item.second;
+        while(!q.empty()) {
+            auto it = q.front();
+            int x = it.first.first;
+            int y = it.first.second;
+            int steps = it.second;
+            q.pop(); 
 
-            for(int k = 0; k < 4; k++) {
-                int nx = x + dx[k];
-                int ny = y + dy[k];
+            result[x][y] = steps;
 
-                if(nx >= 0 && ny >= 0 && nx < n && ny < m && distanceMatrix[nx][ny] == -1) {
-                    distanceMatrix[nx][ny] = dist + 1;
-                    q.push({{nx, ny}, dist + 1});  
+            for(int k=0;k<4;k++) {
+                int nx = x + dirx[k];
+                int ny = y + diry[k];
+
+                if(nx>=0 && nx<n && ny>=0 && ny<m && visited[nx][ny] == 0){
+                    visited[nx][ny] = 1;
+                    q.push({{nx, ny}, steps+1});
                 }
             }
         }
-
-        return distanceMatrix;
+        return result;
     }
 };
