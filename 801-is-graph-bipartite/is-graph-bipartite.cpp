@@ -1,36 +1,33 @@
 class Solution {
 private:
-    bool bfs(int start, vector<vector<int>>& graph, vector<int>& color) {
-       queue<int> q;
-       q.push(start);
 
-        while(!q.empty()) {
-            auto node = q.front();
-            q.pop();
+    bool dfs(int start, int wanted, vector<vector<int>>& adjList, vector<int>& color) {
+        color[start] = wanted;
 
-            for(auto neighbor: graph[node]) {
-                if(color[neighbor] == -1){
-                    color[neighbor] = 1 - color[node];
-                    q.push(neighbor);
-                }else if(color[neighbor] == color[node]) {
+        for(auto it : adjList[start]) {
+            if(color[it] == -1){
+                if(!dfs(it, 1-wanted, adjList, color)){
                     return false;
                 }
+            }else if(color[it] == color[start]) {
+                return false;
             }
         }
-        return true;   
+        return true;
     }
 public:
     bool isBipartite(vector<vector<int>>& graph) {
+        // youll need vector to store the colors
+        // multiple components possible
+
+
         int n = graph.size();
-        int m = graph[0].size();
 
-        vector<int> color (n, -1); // uncolored
+        vector<int> color (n, -1);
 
-        for(int i=0;i<n;i++){
-            if (color[i] == -1){
-                // colored the parent now do neighbors
-                color[i] = 0;
-                if(!bfs(i, graph, color))    return false;
+        for(int i=0;i<n;i++) {
+            if(color[i] == -1) {
+                if(!dfs(i, 0, graph, color)) return false;
             }
         }
         return true;
